@@ -4,11 +4,24 @@ const Student = require("./models/student");
 const { errorHandler } = require("./middleware/error-handler");
 const { createStudentsRouter } = require("./routes/students");
 
-function createApp({ StudentModel = Student, clientOrigin = process.env.CLIENT_ORIGIN } = {}) {
+function createApp({
+  StudentModel = Student,
+  clientOrigin = process.env.CLIENT_ORIGIN,
+} = {}) {
   const app = express();
-  const allowedOrigin = clientOrigin || "http://localhost:4200";
-
-  app.use(cors({ origin: allowedOrigin }));
+  // const allowedOrigin = clientOrigin || "http://localhost:4200";
+  const allowedOrigin = [
+    "http://localhost:4200",
+    "https://yps-reactive-form2.vercel.app",
+  ];
+  // app.use(cors({ origin: allowedOrigin }));
+  app.use(
+    cors({
+      origin: allowedOrigin,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    }),
+  );
   app.use(express.json({ limit: "32kb" }));
 
   app.get("/api/health", (req, res) => {
