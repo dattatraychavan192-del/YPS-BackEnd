@@ -9,19 +9,18 @@ function createApp({
   clientOrigin = process.env.CLIENT_ORIGIN,
 } = {}) {
   const app = express();
-  const allowedOrigins = new Set([
+  const allowedOrigins = [
     "http://localhost:4200",
     "https://yps-reactive-form2.vercel.app",
-  ]);
+    "https://yps-reactive-form2-pityvktzh-dattatraychavan192-dels-projects.vercel.app",
+  ];
   if (clientOrigin) {
     allowedOrigins.add(clientOrigin.replace(/\/+$/, ""));
   }
 
   app.use(
     cors({
-      origin: (origin, callback) => {
-        callback(null, !origin || allowedOrigins.has(origin));
-      },
+      origin: allowedOrigins,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
     }),
