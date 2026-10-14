@@ -16,7 +16,7 @@ async function start() {
   await mongoose.connect(process.env.MONGODB_URI);
   const app = createApp();
 
-  app.listen(port, () => {
+  app.listen(port, "0,0,0,0", () => {
     console.log(`YPS Academy Student API listening on port ${port}`);
   });
 }
