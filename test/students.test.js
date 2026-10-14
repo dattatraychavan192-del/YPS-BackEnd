@@ -48,6 +48,36 @@ function postJson(port, body) {
   });
 }
 
+function preflight(port, origin) {
+  return new Promise((resolve, reject) => {
+    const request = http.request(
+      {
+        hostname: "127.0.0.1",
+        port,
+        path: "/api/students",
+        method: "OPTIONS",
+        headers: {
+          origin,
+          "access-control-request-method": "POST",
+          "access-control-request-headers": "content-type",
+        },
+      },
+      (response) => {
+        response.resume();
+        response.on("end", () => {
+          resolve({
+            status: response.statusCode,
+            allowOrigin: response.headers["access-control-allow-origin"],
+          });
+        });
+      },
+    );
+
+    request.on("error", reject);
+    request.end();
+  });
+}
+
 async function withServer(app, run) {
   const server = app.listen(0, "127.0.0.1");
   await new Promise((resolve) => server.once("listening", resolve));
@@ -114,6 +144,22 @@ test("rejects malformed JSON with a client error", async () => {
 
     assert.equal(status, 400);
     assert.equal(body.error.message, "Request body contains invalid JSON.");
+  });
+});
+
+test("allows the configured client origin in CORS preflight requests", async () => {
+  const app = createApp({
+    clientOrigin: "https://client.example/",
+    StudentModel: { create: async () => ({}) },
+  });
+
+  await withServer(app, async (port) => {
+    const allowed = await preflight(port, "https://client.example");
+    const denied = await preflight(port, "https://untrusted.example");
+
+    assert.equal(allowed.status, 204);
+    assert.equal(allowed.allowOrigin, "https://client.example");
+    assert.equal(denied.allowOrigin, undefined);
   });
 });
 

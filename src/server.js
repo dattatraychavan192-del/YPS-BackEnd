@@ -1,6 +1,5 @@
 require("dotenv").config();
 
-const crypto = require("node:crypto");
 const mongoose = require("mongoose");
 const { createApp } = require("./app");
 
@@ -16,7 +15,7 @@ async function start() {
   await mongoose.connect(process.env.MONGODB_URI);
   const app = createApp();
 
-  app.listen(port, "0,0,0,0", () => {
+  app.listen(port, "0.0.0.0", () => {
     console.log(`YPS Academy Student API listening on port ${port}`);
   });
 }
