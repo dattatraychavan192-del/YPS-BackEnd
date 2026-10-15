@@ -15,7 +15,7 @@ function createApp({
     "https://yps-reactive-form2-pityvktzh-dattatraychavan192-dels-projects.vercel.app",
   ];
   if (clientOrigin) {
-    allowedOrigins.add(clientOrigin.replace(/\/+$/, ""));
+    allowedOrigins.push(clientOrigin.replace(/\/+$/, ""));
   }
 
   app.use(
